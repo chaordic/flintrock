@@ -52,7 +52,7 @@ def get_ssh_client(
         user: str,
         host: str,
         identity_file: str,
-        wait: bool=False,
+        wait: bool=True,
         print_status: bool=None) -> paramiko.client.SSHClient:
     """
     Get an SSH client for the provided host, waiting as necessary for SSH to become
@@ -97,11 +97,8 @@ def get_ssh_client(
             logger.debug("[{h}] SSH AuthenticationException.".format(h=host))
             time.sleep(5)
         except paramiko.ssh_exception.SSHException as e:
-            raise SSHError(
-                host=host,
-                message="SSH protocol error. Possible causes include using "
-                "the wrong key file or username.",
-            ) from e
+            time.sleep(10)
+            logger.debug("[{h}] "SSH protocol error. Possible causes include using the wrong key file or username.".format(h=host))
     else:
         raise SSHError(
             host=host,
